@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Royal Print — Painel de Atendimentos</title>
+  <style>
+    :root {
+      --bg-primary: #0f1117;
+      --bg-secondary: #1a1d27;
+      --bg-card: #222633;
+      --bg-card-hover: #2a2e3d;
+      --border: #2e3347;
+      --text-primary: #e8eaed;
+      --text-secondary: #9aa0b0;
+      --text-muted: #6b7280;
+      --accent-red: #ef4444;
+      --accent-red-bg: rgba(239,68,68,0.12);
+      --accent-yellow: #f59e0b;
+      --accent-yellow-bg: rgba(245,158,11,0.12);
+      --accent-blue: #3b82f6;
+      --accent-blue-bg: rgba(59,130,246,0.12);
+      --accent-green: #22c55e;
+      --accent-green-bg: rgba(34,197,94,0.12);
+      --shadow: 0 2px 8px rgba(0,0,0,0.3);
+      --radius: 10px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-blue), #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 16px;
+    }
+
+    .stat-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .stat-badge.novo { background: var(--accent-red-bg); color: var(--accent-red); }
+    .stat-badge.andamento { background: var(--accent-yellow-bg); color: var(--accent-yellow); }
+    .stat-badge.aguardando { background: var(--accent-blue-bg); color: var(--accent-blue); }
+    .stat-badge.resolvido { background: var(--accent-green-bg); color: var(--accent-green); }
+
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .stat-dot.novo { background: var(--accent-red); }
+    .stat-dot.andamento { background: var(--accent-yellow); }
+    .stat-dot.aguardando { background: var(--accent-blue); }
+    .stat-dot.resolvido { background: var(--accent-green); }
+
+    /* ===== KANBAN BOARD ===== */
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 24px;
+      min-height: calc(100vh - 72px);
+    }
+
+    .column {
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      min-height: 400px;
+    }
+
+    .column-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .column-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .column-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .column-indicator.novo { background: var(--accent-red); box-shadow: 0 0 8px var(--accent-red); }
+    .column-indicator.em_andamento { background: var(--accent-yellow); box-shadow: 0 0 8px var(--accent-yellow); }
+    .column-indicator.aguardando_cliente { background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue); }
+    .column-indicator.resolvido { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+
+    .column-count {
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .column-body {
+      padding: 12px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .column-body.drag-over {
+      background: rgba(59,130,246,0.05);
+      border: 2px dashed var(--accent-blue);
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      cursor: grab;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-blue);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .card.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .card-urgencia {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .card-urgencia.critico { background: var(--accent-red); }
+    .card-urgencia.alerta { background: var(--accent-yellow); }
+    .card-urgencia.normal { background: transparent; }
+
+    .card-nome {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-telefone {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .card-resumo {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      margin-bottom: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .card-tempo {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .card-tempo.critico { color: var(--accent-red); font-weight: 600; }
+    .card-tempo.alerta { color: var(--accent-yellow); }
+
+    .card-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .card-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .card-btn:hover {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+
+    .card-btn.whatsapp:hover {
+      background: #25d366;
+      border-color: #25d366;
+    }
+
+    .card-resolved-info {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .modal h3 {
+      margin-bottom: 16px;
+      font-size: 18px;
+    }
+
+    .modal-field {
+      margin-bottom: 12px;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .modal-field input,
+    .modal-field select {
+      width: 100%;
+      padding: 10px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .modal-field input:focus,
+    .modal-field select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: white;
+    }
+
+    .btn-primary:hover { background: #2563eb; }
+
+    .btn-cancel {
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-cancel:hover { background: var(--bg-card-hover); }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 32px 16px;
+      font-size: 13px;
+    }
+
+    .empty-state-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    /* ===== CONNECTION STATUS ===== */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .connection-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+    }
+
+    .connection-dot.offline { background: var(--accent-red); }
+
+    /* ===== TOAST ===== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      box-shadow: var(--shadow);
+      animation: slideIn 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.success { border-left: 3px solid var(--accent-green); }
+    .toast.error { border-left: 3px solid var(--accent-red); }
+    .toast.info { border-left: 3px solid var(--accent-blue); }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .board {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .board {
+        grid-template-columns: 1fr;
+        padding: 12px;
+      }
+      .header {
+        flex-direction: column;
+        gap: 12px;
+      }
+      .header-stats {
+        flex-wrap: wrap;
+      }
+    }
+
+    /* ===== PULSE ANIMATION ===== */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .pulse { animation: pulse 2s infinite; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <div>
+        <div class="header-logo">Royal Print</div>
+        <div class="header-subtitle">Painel de Atendimentos</div>
+      </div>
+    </div>
+    <div class="header-stats" id="stats"></div>
+    <div class="connection-status">
+      <div class="connection-dot" id="connectionDot"></div>
+      <span id="connectionText">Conectando...</span>
+    </div>
+  </header>
+
+  <!-- KANBAN BOARD -->
+  <main class="board" id="board">
+    <div class="column" data-status="novo">
+      <div class="column-header">
+        <div class="column-title">
+          <div class="column-indicator novo"></div>
+          Novo
+        </div>
+        <span class="column-count" data-count="novo">0</span>
+      </div>
+      <div class="column-body" data-drop="novo"></div>
+    </div>
+
+    <div class="column" data-status="em_andamento">
+      <div class="column-header">
+        <div class="column-title">
+          <div class="column-indicator em_andamento"></div>
+          Em andamento
+        </div>
+        <span class="column-count" data-count="em_andamento">0</span>
+      </div>
+      <div class="column-body" data-drop="em_andamento"></div>
+    </div>
+
+    <div class="column" data-status="aguardando_cliente">
+      <div class="column-header">
+        <div class="column-title">
+          <div class="column-indicator aguardando_cliente"></div>
+          Aguardando cliente
+        </div>
+        <span class="column-count" data-count="aguardando_cliente">0</span>
+      </div>
+      <div class="column-body" data-drop="aguardando_cliente"></div>
+    </div>
+
+    <div class="column" data-status="resolvido">
+      <div class="column-header">
+        <div class="column-title">
+          <div class="column-indicator resolvido"></div>
+          Resolvido
+        </div>
+        <span class="column-count" data-count="resolvido">0</span>
+      </div>
+      <div class="column-body" data-drop="resolvido"></div>
+    </div>
+  </main>
+
+  <!-- MODAL: Resolver -->
+  <div class="modal-overlay" id="resolveModal">
+    <div class="modal">
+      <h3>Resolver atendimento</h3>
+      <div class="modal-field">
+        <label>Quem resolveu?</label>
+        <input type="text" id="resolvedBy" placeholder="Seu nome">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmResolve()">Resolver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOASTS -->
+  <div class="toast-container" id="toasts"></div>
+
+  <script>
+    // ============================================
+    // API — Webhooks N8N
+    // ============================================
+    const API_URL = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp';
+
+    let allCards = [];
+    let draggedCard = null;
+    let pendingResolveId = null;
+    let previousCardIds = new Set();
+
+    // ============================================
+    // CARREGAR DADOS
+    // ============================================
+    async function loadCards(silent) {
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          // Detectar novos cards (para notificacao)
+          if (!silent && allCards.length > 0) {
+            const currentIds = new Set(allCards.map(c => c.id));
+            data.forEach(card => {
+              if (!currentIds.has(card.id)) {
+                showToast('Novo atendimento: ' + card.nome_cliente, 'info');
+              }
+            });
+          }
+
+          allCards = data;
+          setConnection(true);
+          renderBoard();
+        } else {
+          // "No item to return" = tabela vazia
+          allCards = [];
+          setConnection(true);
+          renderBoard();
+        }
+      } catch (err) {
+        showToast('Erro ao carregar dados', 'error');
+        setConnection(false);
+      }
+    }
+
+    // ============================================
+    // RENDERIZAR BOARD
+    // ============================================
+    function renderBoard() {
+      const statuses = ['novo', 'em_andamento', 'aguardando_cliente', 'resolvido'];
+      const counts = {};
+
+      statuses.forEach(status => {
+        const body = document.querySelector('[data-drop="' + status + '"]');
+        const cards = allCards.filter(c => c.status === status);
+        counts[status] = cards.length;
+
+        if (cards.length === 0) {
+          const emptyIcons = {
+            novo: '📭', em_andamento: '⚡', aguardando_cliente: '💤', resolvido: '🎉'
+          };
+          const emptyTexts = {
+            novo: 'Nenhum atendimento novo',
+            em_andamento: 'Nenhum em andamento',
+            aguardando_cliente: 'Nenhum aguardando',
+            resolvido: 'Nenhum resolvido hoje'
+          };
+          body.innerHTML =
+            '<div class="empty-state">' +
+            '<div class="empty-state-icon">' + emptyIcons[status] + '</div>' +
+            emptyTexts[status] +
+            '</div>';
+        } else {
+          body.innerHTML = cards.map(c => renderCard(c)).join('');
+        }
+
+        document.querySelector('[data-count="' + status + '"]').textContent = cards.length;
+      });
+
+      renderStats(counts);
+      attachDragEvents();
+    }
+
+    function renderCard(card) {
+      const horas = horasEsperando(card);
+      const urgencia = card.status === 'resolvido' ? 'normal' :
+                       horas > 2 ? 'critico' : horas > 0.5 ? 'alerta' : 'normal';
+      const tempoText = formatTempo(horas);
+
+      let footerExtra = '';
+      if (card.status === 'resolvido' && card.resolved_by) {
+        footerExtra =
+          '<div class="card-resolved-info">' +
+          'Resolvido por <strong>' + esc(card.resolved_by) + '</strong>' +
+          (card.resolved_at ? ' — ' + formatDate(card.resolved_at) : '') +
+          '</div>';
+      }
+
+      const tel = card.telefone ? card.telefone.replace(/\D/g, '') : '';
+      const whatsappLink = 'https://wa.me/' + tel;
+
+      let advanceBtn = '';
+      if (card.status !== 'resolvido') {
+        advanceBtn = '<button class="card-btn" onclick="moveCard(\'' + card.id + '\', nextStatus(\'' + card.status + '\'))" title="Avançar etapa">▶️</button>';
+      }
+
+      return '<div class="card" draggable="true" data-id="' + card.id + '">' +
+        '<div class="card-urgencia ' + urgencia + '"></div>' +
+        '<div class="card-nome">' +
+          (card.status === 'novo' ? '<span class="pulse">🔴</span>' : '') +
+          esc(card.nome_cliente) +
+        '</div>' +
+        '<div class="card-telefone">📱 ' + esc(card.telefone) + '</div>' +
+        '<div class="card-resumo">' + esc(card.resumo) + '</div>' +
+        '<div class="card-footer">' +
+          '<div class="card-tempo ' + urgencia + '">' +
+            '⏱️ ' + (card.status === 'resolvido' ? formatDate(card.created_at) : tempoText) +
+          '</div>' +
+          '<div class="card-actions">' +
+            '<a href="' + whatsappLink + '" target="_blank" class="card-btn whatsapp" title="Abrir WhatsApp">💬</a>' +
+            advanceBtn +
+          '</div>' +
+        '</div>' +
+        footerExtra +
+      '</div>';
+    }
+
+    function renderStats(counts) {
+      const stats = document.getElementById('stats');
+      stats.innerHTML =
+        '<div class="stat-badge novo"><div class="stat-dot novo"></div>' + counts.novo + ' novos</div>' +
+        '<div class="stat-badge andamento"><div class="stat-dot andamento"></div>' + counts.em_andamento + ' em andamento</div>' +
+        '<div class="stat-badge aguardando"><div class="stat-dot aguardando"></div>' + counts.aguardando_cliente + ' aguardando</div>' +
+        '<div class="stat-badge resolvido"><div class="stat-dot resolvido"></div>' + counts.resolvido + ' resolvidos</div>';
+    }
+
+    // ============================================
+    // DRAG & DROP
+    // ============================================
+    function attachDragEvents() {
+      document.querySelectorAll('.card').forEach(function(card) {
+        card.addEventListener('dragstart', function(e) {
+          draggedCard = card.dataset.id;
+          card.classList.add('dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+
+        card.addEventListener('dragend', function() {
+          card.classList.remove('dragging');
+          draggedCard = null;
+          document.querySelectorAll('.column-body').forEach(function(col) {
+            col.classList.remove('drag-over');
+          });
+        });
+      });
+
+      document.querySelectorAll('.column-body').forEach(function(col) {
+        col.addEventListener('dragover', function(e) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          col.classList.add('drag-over');
+        });
+
+        col.addEventListener('dragleave', function() {
+          col.classList.remove('drag-over');
+        });
+
+        col.addEventListener('drop', function(e) {
+          e.preventDefault();
+          col.classList.remove('drag-over');
+          if (draggedCard) {
+            var newStatus = col.dataset.drop;
+            moveCard(draggedCard, newStatus);
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // AÇÕES
+    // ============================================
+    async function moveCard(id, newStatus) {
+      if (newStatus === 'resolvido') {
+        pendingResolveId = id;
+        document.getElementById('resolveModal').classList.add('active');
+        document.getElementById('resolvedBy').focus();
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id, status: newStatus, resolved_by: '' })
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        // Update local
+        var card = allCards.find(function(c) { return c.id === id; });
+        if (card) {
+          card.status = newStatus;
+          card.updated_at = new Date().toISOString();
+        }
+
+        renderBoard();
+        showToast('Card movido para "' + statusLabel(newStatus) + '"', 'success');
+      } catch (err) {
+        showToast('Erro ao mover card', 'error');
+      }
+    }
+
+    async function confirmResolve() {
+      var resolvedBy = document.getElementById('resolvedBy').value.trim();
+      if (!resolvedBy) {
+        showToast('Informe quem resolveu', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: pendingResolveId,
+            status: 'resolvido',
+            resolved_by: resolvedBy
+          })
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        var card = allCards.find(function(c) { return c.id === pendingResolveId; });
+        if (card) {
+          card.status = 'resolvido';
+          card.resolved_by = resolvedBy;
+          card.resolved_at = new Date().toISOString();
+        }
+
+        closeModal();
+        renderBoard();
+        showToast('Atendimento resolvido!', 'success');
+      } catch (err) {
+        showToast('Erro ao resolver', 'error');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('resolveModal').classList.remove('active');
+      document.getElementById('resolvedBy').value = '';
+      pendingResolveId = null;
+    }
+
+    function nextStatus(current) {
+      var flow = {
+        'novo': 'em_andamento',
+        'em_andamento': 'aguardando_cliente',
+        'aguardando_cliente': 'resolvido'
+      };
+      return flow[current] || current;
+    }
+
+    // ============================================
+    // HELPERS
+    // ============================================
+    function horasEsperando(card) {
+      var created = new Date(card.created_at);
+      return (Date.now() - created.getTime()) / (1000 * 60 * 60);
+    }
+
+    function formatTempo(horas) {
+      if (horas < 1/60) return 'agora';
+      if (horas < 1) return Math.round(horas * 60) + 'min';
+      if (horas < 24) return Math.round(horas) + 'h';
+      return Math.round(horas / 24) + 'd';
+    }
+
+    function formatDate(iso) {
+      var d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function statusLabel(s) {
+      var labels = {
+        novo: 'Novo',
+        em_andamento: 'Em andamento',
+        aguardando_cliente: 'Aguardando cliente',
+        resolvido: 'Resolvido'
+      };
+      return labels[s] || s;
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function setConnection(online) {
+      var dot = document.getElementById('connectionDot');
+      var text = document.getElementById('connectionText');
+      if (online) {
+        dot.classList.remove('offline');
+        text.textContent = 'Conectado';
+      } else {
+        dot.classList.add('offline');
+        text.textContent = 'Desconectado';
+      }
+    }
+
+    function showToast(message, type) {
+      type = type || 'info';
+      var container = document.getElementById('toasts');
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      var icons = { success: '✅', error: '❌', info: '🔔' };
+      toast.innerHTML = (icons[type] || '') + ' ' + message;
+      container.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 4000);
+    }
+
+    // Polling: atualiza a cada 15 segundos
+    setInterval(function() { loadCards(false); }, 15000);
+
+    // Atualizar tempos a cada minuto
+    setInterval(function() { renderBoard(); }, 60000);
+
+    // Tecla Escape fecha modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ============================================
+    // INICIAR
+    // ============================================
+    loadCards(true);
+  </script>
+
+</body>
+</html>
