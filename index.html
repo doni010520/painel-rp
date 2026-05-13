@@ -452,14 +452,34 @@
       .board {
         grid-template-columns: 1fr;
         padding: 12px;
+        gap: 12px;
       }
       .header {
         flex-direction: column;
         gap: 12px;
       }
+      .header-logo {
+        font-size: 18px;
+      }
       .header-stats {
         flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
       }
+      .column {
+        min-height: auto;
+      }
+      .card-btn {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .stat-badge { font-size: 11px; padding: 4px 8px; }
+      .column-title { font-size: 12px; }
+      .card-nome { font-size: 14px; }
+      .card-resumo { font-size: 12px; }
     }
 
     /* ===== PULSE ANIMATION ===== */
@@ -709,6 +729,26 @@
           document.querySelectorAll('.column-body').forEach(function(col) {
             col.classList.remove('drag-over');
           });
+        });
+
+        // Touch drag support for mobile
+        card.addEventListener('touchstart', function(e) {
+          draggedCard = card.dataset.id;
+          card.classList.add('dragging');
+        }, {passive: true});
+
+        card.addEventListener('touchend', function(e) {
+          card.classList.remove('dragging');
+          if (draggedCard) {
+            // Find which column the touch ended on
+            var touch = e.changedTouches[0];
+            var target = document.elementFromPoint(touch.clientX, touch.clientY);
+            var col = target ? target.closest('[data-drop]') : null;
+            if (col) {
+              moveCard(draggedCard, col.dataset.drop);
+            }
+          }
+          draggedCard = null;
         });
       });
 
