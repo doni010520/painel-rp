@@ -557,7 +557,7 @@
     // ============================================
     // API — Webhooks N8N
     // ============================================
-    const API_URL = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp';
+    const API_URL = '/api/painel';
 
     let allCards = [];
     let draggedCard = null;
@@ -572,26 +572,29 @@
         const res = await fetch(API_URL);
         const data = await res.json();
 
+        // N8N retorna objeto unico quando so tem 1 registro
+        let cards;
         if (Array.isArray(data)) {
-          // Detectar novos cards (para notificacao)
-          if (!silent && allCards.length > 0) {
-            const currentIds = new Set(allCards.map(c => c.id));
-            data.forEach(card => {
-              if (!currentIds.has(card.id)) {
-                showToast('Novo atendimento: ' + card.nome_cliente, 'info');
-              }
-            });
-          }
-
-          allCards = data;
-          setConnection(true);
-          renderBoard();
+          cards = data;
+        } else if (data && data.id) {
+          cards = [data];
         } else {
-          // "No item to return" = tabela vazia
-          allCards = [];
-          setConnection(true);
-          renderBoard();
+          cards = [];
         }
+
+        // Detectar novos cards (para notificacao)
+        if (!silent && allCards.length > 0) {
+          const currentIds = new Set(allCards.map(c => c.id));
+          cards.forEach(card => {
+            if (!currentIds.has(card.id)) {
+              showToast('Novo atendimento: ' + card.nome_cliente, 'info');
+            }
+          });
+        }
+
+        allCards = cards;
+        setConnection(true);
+        renderBoard();
       } catch (err) {
         showToast('Erro ao carregar dados', 'error');
         setConnection(false);

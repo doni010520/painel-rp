@@ -2,9 +2,7 @@
   "name": "painel-rp",
   "version": "1.0.0",
   "scripts": {
-    "start": "npx serve -s . -l 3000"
+    "start": "node server.js"
   },
-  "dependencies": {
-    "serve": "^14.2.0"
-  }
+  "dependencies": {}
 }
