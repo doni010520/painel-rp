@@ -271,6 +271,23 @@
     .card-tempo.critico { color: var(--accent-red); font-weight: 600; }
     .card-tempo.alerta { color: var(--accent-yellow); }
 
+    .card-response-time {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .card-response-time.respondido {
+      background: var(--accent-green-bg);
+      color: var(--accent-green);
+    }
+
+    .card-response-time.aguardando {
+      background: var(--accent-yellow-bg);
+      color: var(--accent-yellow);
+    }
+
     .card-actions {
       display: flex;
       gap: 4px;
@@ -687,6 +704,15 @@
                        horas > 2 ? 'critico' : horas > 0.5 ? 'alerta' : 'normal';
       const tempoText = formatTempo(horas);
 
+      // KPI: tempo de resposta
+      let responseTag = '';
+      if (card.first_response_at) {
+        var respTime = (new Date(card.first_response_at) - new Date(card.created_at)) / (1000 * 60);
+        responseTag = '<div class="card-response-time respondido">✅ Respondido em ' + formatTempoMinutos(respTime) + '</div>';
+      } else if (card.status !== 'resolvido') {
+        responseTag = '<div class="card-response-time aguardando">⏳ Aguardando resposta</div>';
+      }
+
       let footerExtra = '';
       if (card.status === 'resolvido' && card.resolved_by) {
         footerExtra =
@@ -712,6 +738,7 @@
         '</div>' +
         '<div class="card-telefone">📱 ' + esc(card.telefone) + '</div>' +
         '<div class="card-resumo">' + esc(card.resumo) + '</div>' +
+        responseTag +
         '<div class="card-footer">' +
           '<div class="card-tempo ' + urgencia + '">' +
             '<span class="tooltip">Tempo de espera desde ' + formatDate(card.created_at) + '</span>' +
@@ -727,12 +754,24 @@
     }
 
     function renderStats(counts) {
+      // Calcular tempo medio de resposta
+      var temposResposta = allCards
+        .filter(function(c) { return c.first_response_at; })
+        .map(function(c) { return (new Date(c.first_response_at) - new Date(c.created_at)) / (1000 * 60); });
+
+      var mediaTag = '';
+      if (temposResposta.length > 0) {
+        var media = temposResposta.reduce(function(a, b) { return a + b; }, 0) / temposResposta.length;
+        mediaTag = '<div class="stat-badge andamento"><div class="stat-dot andamento"></div>⏱️ ' + formatTempoMinutos(media) + '</div>';
+      }
+
       const stats = document.getElementById('stats');
       stats.innerHTML =
         '<div class="stat-badge novo"><div class="stat-dot novo"></div>' + counts.novo + ' novos</div>' +
         '<div class="stat-badge andamento"><div class="stat-dot andamento"></div>' + counts.em_andamento + ' em andamento</div>' +
         '<div class="stat-badge aguardando"><div class="stat-dot aguardando"></div>' + counts.aguardando_cliente + ' aguardando</div>' +
-        '<div class="stat-badge resolvido"><div class="stat-dot resolvido"></div>' + counts.resolvido + ' resolvidos</div>';
+        '<div class="stat-badge resolvido"><div class="stat-dot resolvido"></div>' + counts.resolvido + ' resolvidos</div>' +
+        mediaTag;
     }
 
     // ============================================
@@ -894,6 +933,14 @@
       if (horas < 1) return Math.round(horas * 60) + 'min';
       if (horas < 24) return Math.round(horas) + 'h';
       return Math.round(horas / 24) + 'd';
+    }
+
+    function formatTempoMinutos(min) {
+      if (min < 1) return 'menos de 1min';
+      if (min < 60) return Math.round(min) + 'min';
+      var h = Math.floor(min / 60);
+      var m = Math.round(min % 60);
+      return h + 'h' + (m > 0 ? ' ' + m + 'min' : '');
     }
 
     function formatDate(iso) {
