@@ -691,7 +691,7 @@
         '<div class="card-telefone">📱 ' + esc(card.telefone) + '</div>' +
         '<div class="card-resumo">' + esc(card.resumo) + '</div>' +
         '<div class="card-footer">' +
-          '<div class="card-tempo ' + urgencia + '">' +
+          '<div class="card-tempo ' + urgencia + '" title="Tempo desde que o cliente entrou em contato — ' + formatDate(card.created_at) + '">' +
             '⏱️ ' + (card.status === 'resolvido' ? formatDate(card.created_at) : tempoText) +
           '</div>' +
           '<div class="card-actions">' +
