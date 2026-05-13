@@ -856,11 +856,36 @@
       <h3>Resolver atendimento</h3>
       <div class="modal-field">
         <label>Quem resolveu?</label>
-        <input type="text" id="resolvedBy" placeholder="Seu nome">
+        <select id="resolvedBy">
+          <option value="">Selecione...</option>
+          <option value="Júlio Cesar">Júlio Cesar</option>
+          <option value="Mayara">Mayara</option>
+          <option value="Elani">Elani</option>
+        </select>
       </div>
       <div class="modal-actions">
         <button class="btn btn-cancel" onclick="closeModal()">Cancelar</button>
         <button class="btn btn-primary" onclick="confirmResolve()">Resolver</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Atender -->
+  <div class="modal-overlay" id="atenderModal">
+    <div class="modal">
+      <h3>Quem vai atender?</h3>
+      <div class="modal-field">
+        <label>Atendente</label>
+        <select id="atendentePor">
+          <option value="">Selecione...</option>
+          <option value="Júlio Cesar">Júlio Cesar</option>
+          <option value="Mayara">Mayara</option>
+          <option value="Elani">Elani</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeAtenderModal()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmAtender()">Atender</button>
       </div>
     </div>
   </div>
@@ -1095,12 +1120,27 @@
     // ============================================
     // AÇÕES
     // ============================================
+    let pendingAtenderId = null;
+    let pendingAtenderStatus = null;
+
     async function moveCard(id, newStatus) {
       if (newStatus === 'resolvido') {
         pendingResolveId = id;
         document.getElementById('resolveModal').classList.add('active');
         document.getElementById('resolvedBy').focus();
         return;
+      }
+
+      // Ao mover para em_andamento, perguntar quem vai atender
+      if (newStatus === 'em_andamento') {
+        var card = allCards.find(function(c) { return c.id === id; });
+        if (card && card.status === 'novo') {
+          pendingAtenderId = id;
+          pendingAtenderStatus = newStatus;
+          document.getElementById('atenderModal').classList.add('active');
+          document.getElementById('atendentePor').focus();
+          return;
+        }
       }
 
       try {
@@ -1165,6 +1205,48 @@
       document.getElementById('resolveModal').classList.remove('active');
       document.getElementById('resolvedBy').value = '';
       pendingResolveId = null;
+    }
+
+    function closeAtenderModal() {
+      document.getElementById('atenderModal').classList.remove('active');
+      document.getElementById('atendentePor').value = '';
+      pendingAtenderId = null;
+      pendingAtenderStatus = null;
+    }
+
+    async function confirmAtender() {
+      var atendente = document.getElementById('atendentePor').value;
+      if (!atendente) {
+        showToast('Selecione quem vai atender', 'error');
+        return;
+      }
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: pendingAtenderId,
+            status: pendingAtenderStatus,
+            resolved_by: atendente
+          })
+        });
+
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        var card = allCards.find(function(c) { return c.id === pendingAtenderId; });
+        if (card) {
+          card.status = pendingAtenderStatus;
+          card.resolved_by = atendente;
+          card.updated_at = new Date().toISOString();
+        }
+
+        closeAtenderModal();
+        renderBoard();
+        showToast(atendente + ' assumiu o atendimento', 'success');
+      } catch (err) {
+        showToast('Erro ao mover card', 'error');
+      }
     }
 
     function nextStatus(current) {
@@ -1329,7 +1411,7 @@
 
     // Tecla Escape fecha modal
     document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape') { closeModal(); closeAtenderModal(); }
     });
 
     // Métricas: atualiza a cada 60 segundos
