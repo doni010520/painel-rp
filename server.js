@@ -5,6 +5,7 @@ const path = require('path');
 
 const PORT = 3000;
 const N8N_WEBHOOK = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp';
+const N8N_METRICS = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp-metricas';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -15,8 +16,8 @@ const MIME = {
   '.ico': 'image/x-icon',
 };
 
-function proxyToN8N(req, res) {
-  const url = new URL(N8N_WEBHOOK);
+function proxyToN8N(req, res, targetUrl) {
+  const url = new URL(targetUrl || N8N_WEBHOOK);
   const options = {
     hostname: url.hostname,
     port: 443,
@@ -74,7 +75,7 @@ function serveStatic(req, res) {
 
 const server = http.createServer((req, res) => {
   // Proxy API requests to N8N
-  if (req.url.startsWith('/api/painel')) {
+  if (req.url.startsWith('/api/')) {
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
@@ -84,7 +85,11 @@ const server = http.createServer((req, res) => {
       res.end();
       return;
     }
-    proxyToN8N(req, res);
+    if (req.url.startsWith('/api/metricas')) {
+      proxyToN8N(req, res, N8N_METRICS);
+    } else {
+      proxyToN8N(req, res);
+    }
     return;
   }
 

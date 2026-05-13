@@ -480,6 +480,212 @@
       to { transform: translateX(0); opacity: 1; }
     }
 
+    /* ===== METRICS SECTION ===== */
+    .metrics-section {
+      padding: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .metrics-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .metrics-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-blue), #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metrics-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .metrics-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .metric-icon { font-size: 24px; margin-bottom: 8px; }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .metric-card.best .metric-value { color: var(--accent-green); }
+    .metric-card.worst .metric-value { color: var(--accent-red); }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+
+    .chart-container, .ranking-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .chart-container h3, .ranking-container h3 {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .chart {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+      height: 180px;
+      gap: 8px;
+      padding-top: 10px;
+    }
+
+    .chart-bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .chart-bars {
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .chart-bar {
+      width: 18px;
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: height 0.5s ease;
+      position: relative;
+    }
+
+    .chart-bar.total { background: var(--accent-blue); }
+    .chart-bar.resolvidos { background: var(--accent-green); }
+
+    .chart-bar:hover { opacity: 0.8; }
+
+    .chart-bar .chart-tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1d27;
+      border: 1px solid var(--accent-blue);
+      color: var(--text-primary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      z-index: 50;
+      margin-bottom: 4px;
+    }
+
+    .chart-bar:hover .chart-tooltip { display: block; }
+
+    .chart-label {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    .legend-dot.total { background: var(--accent-blue); }
+    .legend-dot.resolvidos { background: var(--accent-green); }
+
+    .ranking-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border-radius: 6px;
+    }
+
+    .ranking-pos {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-muted);
+      width: 24px;
+      text-align: center;
+    }
+
+    .ranking-pos.gold { color: #fbbf24; }
+    .ranking-pos.silver { color: #94a3b8; }
+    .ranking-pos.bronze { color: #cd7f32; }
+
+    .ranking-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .ranking-count {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-green);
+    }
+
+    .ranking-empty {
+      text-align: center;
+      color: var(--text-muted);
+      padding: 24px;
+      font-size: 13px;
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
       .board {
@@ -512,6 +718,14 @@
         padding: 8px 12px;
         font-size: 14px;
       }
+      .metrics-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .metrics-grid {
+        grid-template-columns: 1fr;
+      }
+      .metrics-section { padding: 16px; }
+      .metric-value { font-size: 22px; }
     }
 
     @media (max-width: 400px) {
@@ -593,6 +807,48 @@
       <div class="column-body" data-drop="resolvido"></div>
     </div>
   </main>
+
+  <!-- METRICAS -->
+  <section class="metrics-section" id="metricsSection">
+    <div class="metrics-header">
+      <h2>Métricas de Atendimento</h2>
+      <span class="metrics-subtitle">Últimos 7 dias</span>
+    </div>
+
+    <div class="metrics-cards">
+      <div class="metric-card">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-value" id="metricMedia">--</div>
+        <div class="metric-label">Tempo médio de resposta</div>
+      </div>
+      <div class="metric-card best">
+        <div class="metric-icon">🟢</div>
+        <div class="metric-value" id="metricMin">--</div>
+        <div class="metric-label">Melhor tempo</div>
+      </div>
+      <div class="metric-card worst">
+        <div class="metric-icon">🔴</div>
+        <div class="metric-value" id="metricMax">--</div>
+        <div class="metric-label">Pior tempo</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon">📊</div>
+        <div class="metric-value" id="metricTaxa">--</div>
+        <div class="metric-label">Taxa de resolução hoje</div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="chart-container">
+        <h3>Atendimentos por dia</h3>
+        <div class="chart" id="chartDias"></div>
+      </div>
+      <div class="ranking-container">
+        <h3>Quem mais resolve</h3>
+        <div class="ranking-list" id="rankingList"></div>
+      </div>
+    </div>
+  </section>
 
   <!-- MODAL: Resolver -->
   <div class="modal-overlay" id="resolveModal">
@@ -988,6 +1244,83 @@
       setTimeout(function() { toast.remove(); }, 4000);
     }
 
+    // ============================================
+    // MÉTRICAS
+    // ============================================
+    async function loadMetrics() {
+      try {
+        var res = await fetch('/api/metricas');
+        var data = await res.json();
+        renderMetrics(data);
+      } catch (err) {
+        console.log('Erro ao carregar metricas:', err);
+      }
+    }
+
+    function renderMetrics(m) {
+      // Cards de KPI
+      document.getElementById('metricMedia').textContent = m.media_min > 0 ? formatTempoMinutos(parseInt(m.media_min)) : '--';
+      document.getElementById('metricMin').textContent = m.min_min > 0 ? formatTempoMinutos(parseInt(m.min_min)) : '--';
+      document.getElementById('metricMax').textContent = m.max_min > 0 ? formatTempoMinutos(parseInt(m.max_min)) : '--';
+
+      var total = parseInt(m.total_hoje) || 0;
+      var resolvidos = parseInt(m.resolvidos_hoje) || 0;
+      var taxa = total > 0 ? Math.round((resolvidos / total) * 100) : 0;
+      document.getElementById('metricTaxa').textContent = taxa + '%';
+
+      // Grafico de barras - ultimos 7 dias
+      var dias = m.ultimos_7_dias || [];
+      var chartEl = document.getElementById('chartDias');
+
+      if (dias.length === 0) {
+        chartEl.innerHTML = '<div class="ranking-empty">Sem dados ainda</div>';
+        return;
+      }
+
+      var maxVal = Math.max.apply(null, dias.map(function(d) { return parseInt(d.total) || 1; }));
+
+      var barsHtml = dias.map(function(d) {
+        var totalH = Math.max(4, (parseInt(d.total) / maxVal) * 150);
+        var resH = Math.max(4, (parseInt(d.resolvidos) / maxVal) * 150);
+        return '<div class="chart-bar-group">' +
+          '<div class="chart-bars">' +
+            '<div class="chart-bar total" style="height:' + totalH + 'px">' +
+              '<span class="chart-tooltip">' + d.total + ' atendimentos</span>' +
+            '</div>' +
+            '<div class="chart-bar resolvidos" style="height:' + resH + 'px">' +
+              '<span class="chart-tooltip">' + d.resolvidos + ' resolvidos</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="chart-label">' + d.dia + '</div>' +
+        '</div>';
+      }).join('');
+
+      barsHtml += '<div class="chart-legend">' +
+        '<span><span class="legend-dot total"></span>Total</span>' +
+        '<span><span class="legend-dot resolvidos"></span>Resolvidos</span>' +
+      '</div>';
+
+      chartEl.innerHTML = barsHtml;
+
+      // Ranking
+      var ranking = m.ranking || [];
+      var rankingEl = document.getElementById('rankingList');
+
+      if (ranking.length === 0) {
+        rankingEl.innerHTML = '<div class="ranking-empty">Nenhum atendimento resolvido ainda</div>';
+        return;
+      }
+
+      var posClasses = ['gold', 'silver', 'bronze', '', ''];
+      rankingEl.innerHTML = ranking.map(function(r, i) {
+        return '<div class="ranking-item">' +
+          '<div class="ranking-pos ' + (posClasses[i] || '') + '">' + (i + 1) + '</div>' +
+          '<div class="ranking-name">' + esc(r.nome) + '</div>' +
+          '<div class="ranking-count">' + r.total + '</div>' +
+        '</div>';
+      }).join('');
+    }
+
     // Polling: atualiza a cada 15 segundos
     setInterval(function() { loadCards(false); }, 15000);
 
@@ -999,10 +1332,14 @@
       if (e.key === 'Escape') closeModal();
     });
 
+    // Métricas: atualiza a cada 60 segundos
+    setInterval(function() { loadMetrics(); }, 60000);
+
     // ============================================
     // INICIAR
     // ============================================
     loadCards(true);
+    loadMetrics();
   </script>
 
 </body>
