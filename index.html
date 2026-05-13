@@ -244,7 +244,29 @@
       display: flex;
       align-items: center;
       gap: 4px;
+      position: relative;
+      cursor: help;
     }
+
+    .card-tempo .tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 6px;
+      background: #1a1d27;
+      border: 1px solid var(--accent-blue);
+      color: var(--text-primary);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 400;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      z-index: 50;
+    }
+
+    .card-tempo:hover .tooltip { display: block; }
 
     .card-tempo.critico { color: var(--accent-red); font-weight: 600; }
     .card-tempo.alerta { color: var(--accent-yellow); }
@@ -691,7 +713,8 @@
         '<div class="card-telefone">📱 ' + esc(card.telefone) + '</div>' +
         '<div class="card-resumo">' + esc(card.resumo) + '</div>' +
         '<div class="card-footer">' +
-          '<div class="card-tempo ' + urgencia + '" title="Tempo desde que o cliente entrou em contato — ' + formatDate(card.created_at) + '">' +
+          '<div class="card-tempo ' + urgencia + '">' +
+            '<span class="tooltip">Tempo de espera desde ' + formatDate(card.created_at) + '</span>' +
             '⏱️ ' + (card.status === 'resolvido' ? formatDate(card.created_at) : tempoText) +
           '</div>' +
           '<div class="card-actions">' +
