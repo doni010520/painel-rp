@@ -1142,6 +1142,14 @@
         <textarea id="legendaInput" rows="4" placeholder="Digite a mensagem que acompanha o arquivo..."></textarea>
       </div>
 
+      <div class="d-form-group" style="margin-bottom:12px;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;">
+          <input type="checkbox" id="modoTeste" onchange="toggleModoTeste()">
+          <span>🧪 Modo teste (enviar apenas para meu número)</span>
+        </label>
+        <input type="text" id="testeNumero" placeholder="Ex: 71993061031" value="5571993061031" style="display:none;margin-top:6px;max-width:220px;">
+      </div>
+
       <div class="disparos-actions">
         <button class="d-btn d-btn-primary" onclick="iniciarEnvioAgora()" id="btnEnviarAgora">Enviar Agora</button>
         <button class="d-btn d-btn-secondary" onclick="toggleAgendar()" id="btnAgendar">📅 Agendar</button>
@@ -1908,16 +1916,34 @@
     }
 
     // ============================================
+    // DISPAROS — MODO TESTE
+    // ============================================
+    function toggleModoTeste() {
+      var checked = document.getElementById('modoTeste').checked;
+      document.getElementById('testeNumero').style.display = checked ? '' : 'none';
+    }
+
+    function getTesteNumero() {
+      var checked = document.getElementById('modoTeste').checked;
+      if (!checked) return null;
+      var num = document.getElementById('testeNumero').value.trim().replace(/\D/g, '');
+      if (!num || num.length < 10) { alert('Informe um numero valido para teste.'); return false; }
+      return num.startsWith('55') ? num : '55' + num;
+    }
+
+    // ============================================
     // DISPAROS — CONFIRMAR E ENVIAR
     // ============================================
     function confirmarEEnviar(enviarAgora, agendadoPara) {
       var legenda = document.getElementById('legendaInput').value.trim();
+      var testeNum = getTesteNumero();
+      if (testeNum === false) return;
 
       fetch('/api/disparos?action=contatos')
         .then(function(r) { return r.json(); })
         .catch(function() { return { count: '?' }; })
         .then(function(data) {
-          var count = data.count || '?';
+          var count = testeNum ? '1 (TESTE)' : (data.count || '?');
           var acao = enviarAgora
             ? 'Enviar AGORA'
             : 'Agendar para ' + new Date(agendadoPara).toLocaleString('pt-BR');
@@ -1925,15 +1951,16 @@
           var msg = 'Confirmar disparo?\n\n' +
             'Arquivo: ' + selectedFile.name + '\n' +
             'Legenda: ' + legenda.substring(0, 80) + (legenda.length > 80 ? '...' : '') + '\n' +
-            'Destinatarios: ~' + count + ' contatos\n' +
+            'Destinatarios: ' + count + ' contatos\n' +
+            (testeNum ? 'Numero teste: ' + testeNum + '\n' : '') +
             'Acao: ' + acao;
 
           if (!confirm(msg)) return;
-          executarDisparo(enviarAgora, agendadoPara, legenda);
+          executarDisparo(enviarAgora, agendadoPara, legenda, testeNum);
         });
     }
 
-    function executarDisparo(enviarAgora, agendadoPara, legenda) {
+    function executarDisparo(enviarAgora, agendadoPara, legenda, testeNumero) {
       var btnEnviar = document.getElementById('btnEnviarAgora');
       var btnAgendar = document.getElementById('btnAgendar');
       var progress = document.getElementById('uploadProgress');
@@ -1959,7 +1986,8 @@
             legenda:       legenda,
             agendado_para: agendadoPara,
             enviar_agora:  enviarAgora,
-            created_by:    'admin'
+            created_by:    'admin',
+            teste_numero:  testeNumero || null
           })
         });
       })
