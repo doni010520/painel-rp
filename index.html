@@ -74,17 +74,11 @@
       font-size: 13px;
     }
 
-    .header-bottom-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      width: 100%;
-    }
-
     .header-stats {
       display: flex;
       gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .stat-badge {
@@ -719,8 +713,7 @@
       }
       .header { gap: 6px; padding: 10px 12px 8px; }
       .header-logo { font-size: 20px; }
-      .header-bottom-row { flex-wrap: wrap; gap: 8px; }
-      .header-stats { flex-wrap: wrap; gap: 6px; justify-content: center; }
+      .header-stats { gap: 6px; }
       .column {
         min-height: auto;
       }
@@ -1029,13 +1022,11 @@
         <span id="connectionText">Conectando...</span>
       </div>
     </div>
-    <div class="header-bottom-row">
-      <div class="header-tabs">
-        <button class="tab-btn active" data-tab="atendimentos" onclick="switchTab('atendimentos')">Atendimentos</button>
-        <button class="tab-btn" data-tab="disparos" onclick="switchTab('disparos')">Disparos</button>
-      </div>
-      <div class="header-stats" id="stats"></div>
+    <div class="header-tabs">
+      <button class="tab-btn active" data-tab="atendimentos" onclick="switchTab('atendimentos')">Atendimentos</button>
+      <button class="tab-btn" data-tab="disparos" onclick="switchTab('disparos')">Disparos</button>
     </div>
+    <div class="header-stats" id="stats"></div>
   </header>
 
   <!-- KANBAN BOARD -->
