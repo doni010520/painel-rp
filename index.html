@@ -1939,7 +1939,11 @@
       var testeNum = getTesteNumero();
       if (testeNum === false) return;
 
-      fetch('/api/disparos?action=contatos')
+      fetch('/api/disparos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'contatos' })
+      })
         .then(function(r) { return r.json(); })
         .catch(function() { return { count: '?' }; })
         .then(function(data) {
@@ -2016,8 +2020,17 @@
     // DISPAROS — CARREGAR HISTORICO
     // ============================================
     function loadDisparos() {
-      fetch('/api/disparos')
-        .then(function(r) { return r.json(); })
+      fetch('/api/disparos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'listar' })
+      })
+        .then(function(r) {
+          return r.text().then(function(text) {
+            if (!text || !text.trim()) return [];
+            try { return JSON.parse(text); } catch(e) { return []; }
+          });
+        })
         .then(function(data) {
           var disparos = Array.isArray(data) ? data : (data.data || []);
           var tbody = document.getElementById('disparosBody');
@@ -2048,18 +2061,17 @@
             '</tr>';
           }).join('');
         })
-        .catch(function() {
-          document.getElementById('disparosEmpty').style.display = '';
-          document.getElementById('disparosBody').innerHTML = '';
+        .catch(function(e) {
+          console.error('loadDisparos error:', e);
         });
     }
 
     function cancelarDisparo(id) {
       if (!confirm('Cancelar este disparo agendado?')) return;
       fetch('/api/disparos', {
-        method: 'PATCH',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id })
+        body: JSON.stringify({ action: 'cancelar', id: id })
       })
       .then(function(r) { return r.json(); })
       .then(function() {
