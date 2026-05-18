@@ -1895,7 +1895,7 @@
     function iniciarEnvioAgora() {
       if (!selectedFile) return alert('Selecione um arquivo primeiro.');
       var legenda = document.getElementById('legendaInput').value.trim();
-      if (!legenda) return alert('Digite uma legenda/mensagem.');
+      // legenda é opcional
       confirmarEEnviar(true, null);
     }
 
@@ -1905,7 +1905,7 @@
     function iniciarEnvioAgendado() {
       if (!selectedFile) return alert('Selecione um arquivo primeiro.');
       var legenda = document.getElementById('legendaInput').value.trim();
-      if (!legenda) return alert('Digite uma legenda/mensagem.');
+      // legenda é opcional
 
       var data = document.getElementById('agendarData').value;
       var hora = document.getElementById('agendarHora').value;
