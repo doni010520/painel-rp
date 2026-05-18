@@ -742,6 +742,266 @@
     }
 
     .pulse { animation: pulse 2s infinite; }
+
+    /* ===== TABS ===== */
+    .header-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover { color: var(--text-primary); }
+
+    .tab-btn.active {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+
+    /* ===== DISPAROS SECTION ===== */
+    .disparos-section {
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .disparos-upload-card,
+    .disparos-history-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .disparos-upload-card h2,
+    .disparos-history-card h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .upload-dropzone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .upload-dropzone:hover,
+    .upload-dropzone.drag-over {
+      border-color: var(--accent-blue);
+      background: var(--accent-blue-bg);
+    }
+
+    .upload-icon { font-size: 48px; margin-bottom: 12px; }
+
+    .upload-dropzone p {
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .upload-hint { color: var(--text-muted); font-size: 12px; }
+
+    .upload-preview {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+
+    .preview-thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .preview-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    .preview-thumb .file-icon {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .preview-info { display: flex; flex-direction: column; gap: 4px; }
+    .preview-name { font-weight: 600; color: var(--text-primary); }
+    .preview-size { color: var(--text-muted); font-size: 13px; }
+
+    .btn-remove-file {
+      background: none;
+      border: none;
+      color: var(--accent-red);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .d-form-group { margin-bottom: 16px; }
+
+    .d-form-group label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .d-form-group textarea,
+    .d-form-group input[type="date"],
+    .d-form-group input[type="time"] {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    .d-form-group textarea:focus,
+    .d-form-group input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .d-form-row { display: flex; gap: 16px; }
+    .d-form-row .d-form-group { flex: 1; }
+
+    .disparos-actions { display: flex; gap: 12px; margin-bottom: 16px; }
+
+    .d-btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      font-family: inherit;
+    }
+
+    .d-btn:hover { opacity: 0.85; }
+    .d-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .d-btn-primary { background: var(--accent-blue); color: #fff; }
+
+    .d-btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .agendar-fields {
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+
+    .disparos-table-wrap { overflow-x: auto; }
+
+    .disparos-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .disparos-table th {
+      text-align: left;
+      padding: 12px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .disparos-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .disparos-table tbody tr:hover { background: var(--bg-card-hover); }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-badge.agendado  { background: var(--accent-yellow-bg); color: var(--accent-yellow); }
+    .status-badge.enviando  { background: var(--accent-blue-bg);   color: var(--accent-blue);   }
+    .status-badge.concluido { background: var(--accent-green-bg);  color: var(--accent-green);  }
+    .status-badge.falhou,
+    .status-badge.cancelado { background: var(--accent-red-bg);    color: var(--accent-red);    }
+
+    .legenda-truncated {
+      display: block;
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .disparos-empty {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .upload-progress {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    @media (max-width: 1024px) { .disparos-section { padding: 16px; } }
+
+    @media (max-width: 640px) {
+      .disparos-actions { flex-direction: column; }
+      .d-form-row { flex-direction: column; }
+      .upload-dropzone { padding: 24px; }
+      .header-tabs { font-size: 12px; }
+      .tab-btn { padding: 6px 14px; font-size: 12px; }
+    }
+
+    @media (max-width: 400px) {
+      .disparos-section { padding: 8px; }
+      .disparos-upload-card,
+      .disparos-history-card { padding: 16px; }
+    }
   </style>
 </head>
 <body>
@@ -753,6 +1013,10 @@
         <div class="header-logo">Royal Print</div>
         <div class="header-subtitle">Painel de Atendimentos</div>
       </div>
+    </div>
+    <div class="header-tabs">
+      <button class="tab-btn active" data-tab="atendimentos" onclick="switchTab('atendimentos')">Atendimentos</button>
+      <button class="tab-btn" data-tab="disparos" onclick="switchTab('disparos')">Disparos</button>
     </div>
     <div class="header-stats" id="stats"></div>
     <div class="connection-status">
@@ -848,6 +1112,79 @@
         <div class="ranking-list" id="rankingList"></div>
       </div>
     </div>
+  </section>
+
+  <!-- ===== DISPAROS SECTION ===== -->
+  <section class="disparos-section" id="disparosSection" style="display:none;">
+
+    <!-- UPLOAD / NOVO DISPARO -->
+    <div class="disparos-upload-card">
+      <h2>Novo Disparo</h2>
+
+      <div class="upload-dropzone" id="uploadDropzone">
+        <div class="upload-icon">📎</div>
+        <p>Arraste um arquivo aqui ou <strong>clique para selecionar</strong></p>
+        <span class="upload-hint">Imagem, PDF, Documento ou Video (max 16MB)</span>
+        <input type="file" id="fileInput" accept="image/*,.pdf,.doc,.docx,.xlsx,video/mp4" hidden>
+      </div>
+
+      <div class="upload-preview" id="uploadPreview" style="display:none;">
+        <div class="preview-thumb" id="previewThumb"></div>
+        <div class="preview-info">
+          <span class="preview-name" id="previewName"></span>
+          <span class="preview-size" id="previewSize"></span>
+          <button class="btn-remove-file" onclick="removeFile()">✕ Remover</button>
+        </div>
+      </div>
+
+      <div class="d-form-group">
+        <label for="legendaInput">Legenda / Mensagem</label>
+        <textarea id="legendaInput" rows="4" placeholder="Digite a mensagem que acompanha o arquivo..."></textarea>
+      </div>
+
+      <div class="disparos-actions">
+        <button class="d-btn d-btn-primary" onclick="iniciarEnvioAgora()" id="btnEnviarAgora">Enviar Agora</button>
+        <button class="d-btn d-btn-secondary" onclick="toggleAgendar()" id="btnAgendar">📅 Agendar</button>
+      </div>
+
+      <div class="agendar-fields" id="agendarFields" style="display:none;">
+        <div class="d-form-row">
+          <div class="d-form-group">
+            <label for="agendarData">Data</label>
+            <input type="date" id="agendarData">
+          </div>
+          <div class="d-form-group">
+            <label for="agendarHora">Hora</label>
+            <input type="time" id="agendarHora">
+          </div>
+        </div>
+        <button class="d-btn d-btn-primary" onclick="iniciarEnvioAgendado()">Confirmar Agendamento</button>
+      </div>
+
+      <p class="upload-progress" id="uploadProgress" style="display:none;"></p>
+    </div>
+
+    <!-- HISTORICO -->
+    <div class="disparos-history-card">
+      <h2>Historico de Disparos</h2>
+      <div class="disparos-table-wrap">
+        <table class="disparos-table" id="disparosTable">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Arquivo</th>
+              <th>Legenda</th>
+              <th>Status</th>
+              <th>Progresso</th>
+              <th>Acoes</th>
+            </tr>
+          </thead>
+          <tbody id="disparosBody"></tbody>
+        </table>
+        <div class="disparos-empty" id="disparosEmpty" style="display:none;">Nenhum disparo encontrado.</div>
+      </div>
+    </div>
+
   </section>
 
   <!-- MODAL: Resolver -->
@@ -1401,6 +1738,307 @@
           '<div class="ranking-count">' + r.total + '</div>' +
         '</div>';
       }).join('');
+    }
+
+    // ============================================
+    // TABS — Atendimentos / Disparos
+    // ============================================
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(function(btn) {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+      });
+
+      var boardEl    = document.getElementById('board');
+      var metricsEl  = document.getElementById('metricsSection');
+      var disparosEl = document.getElementById('disparosSection');
+
+      if (tab === 'atendimentos') {
+        boardEl.style.display    = '';
+        metricsEl.style.display  = '';
+        disparosEl.style.display = 'none';
+      } else if (tab === 'disparos') {
+        boardEl.style.display    = 'none';
+        metricsEl.style.display  = 'none';
+        disparosEl.style.display = '';
+        loadDisparos();
+      }
+    }
+
+    // ============================================
+    // DISPAROS — UPLOAD
+    // ============================================
+    var selectedFile = null;
+
+    var dropzone  = document.getElementById('uploadDropzone');
+    var fileInput = document.getElementById('fileInput');
+
+    dropzone.addEventListener('click', function() { fileInput.click(); });
+
+    dropzone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropzone.classList.add('drag-over');
+    });
+
+    dropzone.addEventListener('dragleave', function() {
+      dropzone.classList.remove('drag-over');
+    });
+
+    dropzone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropzone.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    fileInput.addEventListener('change', function() {
+      if (fileInput.files.length) handleFile(fileInput.files[0]);
+    });
+
+    function handleFile(file) {
+      if (file.size > 16 * 1024 * 1024) {
+        alert('Arquivo muito grande. Maximo 16MB.');
+        return;
+      }
+      selectedFile = file;
+      dropzone.style.display = 'none';
+
+      var preview = document.getElementById('uploadPreview');
+      preview.style.display = 'flex';
+
+      document.getElementById('previewName').textContent = file.name;
+      document.getElementById('previewSize').textContent = formatFileSize(file.size);
+
+      var thumb = document.getElementById('previewThumb');
+      if (file.type.startsWith('image/')) {
+        thumb.innerHTML = '<img src="' + URL.createObjectURL(file) + '" alt="preview">';
+      } else if (file.type === 'application/pdf') {
+        thumb.innerHTML = '<div class="file-icon">PDF</div>';
+      } else if (file.type.startsWith('video/')) {
+        thumb.innerHTML = '<div class="file-icon">MP4</div>';
+      } else {
+        thumb.innerHTML = '<div class="file-icon">DOC</div>';
+      }
+    }
+
+    function removeFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      dropzone.style.display = '';
+      document.getElementById('uploadPreview').style.display = 'none';
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function getFileType(file) {
+      if (file.type.startsWith('image/')) return 'image';
+      if (file.type.startsWith('video/')) return 'video';
+      return 'document';
+    }
+
+    // ============================================
+    // DISPAROS — SUPABASE STORAGE UPLOAD
+    // ============================================
+    var SUPABASE_URL      = 'https://skacswwfbbdbtabgqsqy.supabase.co';
+    var SUPABASE_KEY       = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrYWNzd3dmYmJkYnRhYmdxc3F5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MzY4NTk2NywiZXhwIjoyMDg5MjYxOTY3fQ.V3NSNRpc3D7EUKtvGqbcl5pM76jid1yrgrygK011160';
+    var SUPABASE_BUCKET   = 'disparos';
+
+    function uploadToSupabase(file, onProgress) {
+      return new Promise(function(resolve, reject) {
+        var fileName = Date.now() + '_' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        var url = SUPABASE_URL + '/storage/v1/object/' + SUPABASE_BUCKET + '/' + fileName;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Authorization', 'Bearer ' + SUPABASE_KEY);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.setRequestHeader('x-upsert', 'true');
+
+        xhr.upload.onprogress = function(e) {
+          if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
+        };
+
+        xhr.onload = function() {
+          if (xhr.status === 200 || xhr.status === 201) {
+            resolve(SUPABASE_URL + '/storage/v1/object/public/' + SUPABASE_BUCKET + '/' + fileName);
+          } else {
+            reject(new Error('Upload falhou: ' + xhr.statusText));
+          }
+        };
+
+        xhr.onerror = function() { reject(new Error('Erro de rede no upload')); };
+        xhr.send(file);
+      });
+    }
+
+    // ============================================
+    // DISPAROS — AGENDAR TOGGLE
+    // ============================================
+    function toggleAgendar() {
+      var fields = document.getElementById('agendarFields');
+      fields.style.display = fields.style.display === 'none' ? '' : 'none';
+    }
+
+    // ============================================
+    // DISPAROS — ENVIAR AGORA
+    // ============================================
+    function iniciarEnvioAgora() {
+      if (!selectedFile) return alert('Selecione um arquivo primeiro.');
+      var legenda = document.getElementById('legendaInput').value.trim();
+      if (!legenda) return alert('Digite uma legenda/mensagem.');
+      confirmarEEnviar(true, null);
+    }
+
+    // ============================================
+    // DISPAROS — AGENDAR
+    // ============================================
+    function iniciarEnvioAgendado() {
+      if (!selectedFile) return alert('Selecione um arquivo primeiro.');
+      var legenda = document.getElementById('legendaInput').value.trim();
+      if (!legenda) return alert('Digite uma legenda/mensagem.');
+
+      var data = document.getElementById('agendarData').value;
+      var hora = document.getElementById('agendarHora').value;
+      if (!data || !hora) return alert('Selecione data e hora.');
+
+      var agendadoPara = new Date(data + 'T' + hora + ':00-03:00').toISOString();
+      confirmarEEnviar(false, agendadoPara);
+    }
+
+    // ============================================
+    // DISPAROS — CONFIRMAR E ENVIAR
+    // ============================================
+    function confirmarEEnviar(enviarAgora, agendadoPara) {
+      var legenda = document.getElementById('legendaInput').value.trim();
+
+      fetch('/api/disparos?action=contatos')
+        .then(function(r) { return r.json(); })
+        .catch(function() { return { count: '?' }; })
+        .then(function(data) {
+          var count = data.count || '?';
+          var acao = enviarAgora
+            ? 'Enviar AGORA'
+            : 'Agendar para ' + new Date(agendadoPara).toLocaleString('pt-BR');
+
+          var msg = 'Confirmar disparo?\n\n' +
+            'Arquivo: ' + selectedFile.name + '\n' +
+            'Legenda: ' + legenda.substring(0, 80) + (legenda.length > 80 ? '...' : '') + '\n' +
+            'Destinatarios: ~' + count + ' contatos\n' +
+            'Acao: ' + acao;
+
+          if (!confirm(msg)) return;
+          executarDisparo(enviarAgora, agendadoPara, legenda);
+        });
+    }
+
+    function executarDisparo(enviarAgora, agendadoPara, legenda) {
+      var btnEnviar = document.getElementById('btnEnviarAgora');
+      var btnAgendar = document.getElementById('btnAgendar');
+      var progress = document.getElementById('uploadProgress');
+
+      btnEnviar.disabled = true;
+      btnAgendar.disabled = true;
+      btnEnviar.textContent = 'Fazendo upload...';
+      progress.style.display = '';
+      progress.textContent = 'Enviando arquivo para o storage... 0%';
+
+      uploadToSupabase(selectedFile, function(pct) {
+        progress.textContent = 'Enviando arquivo para o storage... ' + pct + '%';
+      })
+      .then(function(fileUrl) {
+        progress.textContent = 'Criando disparo...';
+        return fetch('/api/disparos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            arquivo_url:   fileUrl,
+            arquivo_tipo:  getFileType(selectedFile),
+            arquivo_nome:  selectedFile.name,
+            legenda:       legenda,
+            agendado_para: agendadoPara,
+            enviar_agora:  enviarAgora,
+            created_by:    'admin'
+          })
+        });
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
+        if (result.error) throw new Error(result.error);
+        alert(enviarAgora ? 'Disparo iniciado!' : 'Disparo agendado!');
+        removeFile();
+        document.getElementById('legendaInput').value = '';
+        document.getElementById('agendarFields').style.display = 'none';
+        progress.style.display = 'none';
+        loadDisparos();
+      })
+      .catch(function(e) {
+        alert('Erro: ' + e.message);
+        progress.style.display = 'none';
+      })
+      .finally(function() {
+        btnEnviar.disabled = false;
+        btnAgendar.disabled = false;
+        btnEnviar.textContent = 'Enviar Agora';
+      });
+    }
+
+    // ============================================
+    // DISPAROS — CARREGAR HISTORICO
+    // ============================================
+    function loadDisparos() {
+      fetch('/api/disparos')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var disparos = Array.isArray(data) ? data : (data.data || []);
+          var tbody = document.getElementById('disparosBody');
+          var empty = document.getElementById('disparosEmpty');
+
+          if (!disparos.length) {
+            tbody.innerHTML = '';
+            empty.style.display = '';
+            return;
+          }
+          empty.style.display = 'none';
+
+          tbody.innerHTML = disparos.map(function(d) {
+            var dataFmt = new Date(d.created_at).toLocaleString('pt-BR');
+            var legFmt  = (d.legenda || '').substring(0, 60);
+            var progresso = (d.enviados || 0) + ' / ' + (d.total || 0);
+            var cancelBtn = d.status === 'agendado'
+              ? '<button class="btn-remove-file" onclick="cancelarDisparo(\'' + d.id + '\')">Cancelar</button>'
+              : '';
+
+            return '<tr>' +
+              '<td>' + dataFmt + '</td>' +
+              '<td>' + esc(d.arquivo_nome || d.arquivo_tipo) + '</td>' +
+              '<td><span class="legenda-truncated">' + esc(legFmt) + '</span></td>' +
+              '<td><span class="status-badge ' + d.status + '">' + d.status + '</span></td>' +
+              '<td>' + progresso + '</td>' +
+              '<td>' + cancelBtn + '</td>' +
+            '</tr>';
+          }).join('');
+        })
+        .catch(function() {
+          document.getElementById('disparosEmpty').style.display = '';
+          document.getElementById('disparosBody').innerHTML = '';
+        });
+    }
+
+    function cancelarDisparo(id) {
+      if (!confirm('Cancelar este disparo agendado?')) return;
+      fetch('/api/disparos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        showToast('Disparo cancelado', 'info');
+        loadDisparos();
+      })
+      .catch(function(e) { alert('Erro: ' + e.message); });
     }
 
     // Polling: atualiza a cada 15 segundos

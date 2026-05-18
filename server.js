@@ -4,8 +4,9 @@ const fs = require('fs');
 const path = require('path');
 
 const PORT = 3000;
-const N8N_WEBHOOK = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp';
-const N8N_METRICS = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp-metricas';
+const N8N_WEBHOOK  = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp';
+const N8N_METRICS  = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/painel-rp-metricas';
+const N8N_DISPAROS = 'https://benitech-n8n.x3t6qy.easypanel.host/webhook/disparos';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -21,7 +22,7 @@ function proxyToN8N(req, res, targetUrl) {
   const options = {
     hostname: url.hostname,
     port: 443,
-    path: url.pathname,
+    path: url.pathname + url.search,
     method: req.method,
     headers: { 'Content-Type': 'application/json' },
   };
@@ -80,12 +81,18 @@ const server = http.createServer((req, res) => {
       res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       });
       res.end();
       return;
     }
-    if (req.url.startsWith('/api/metricas')) {
+    // Rota disparos — repassa query string para o N8N
+    if (req.url.startsWith('/api/disparos')) {
+      const qs = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+      const target = new URL(N8N_DISPAROS);
+      target.search = qs;
+      proxyToN8N(req, res, target.toString());
+    } else if (req.url.startsWith('/api/metricas')) {
       proxyToN8N(req, res, N8N_METRICS);
     } else {
       proxyToN8N(req, res);
