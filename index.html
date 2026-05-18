@@ -39,23 +39,30 @@
     .header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: 14px 24px 10px;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
       position: sticky;
       top: 0;
       z-index: 100;
     }
 
-    .header-left {
+    .header-top-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .header-center {
+      text-align: center;
+      flex: 1;
     }
 
     .header-logo {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 700;
       background: linear-gradient(135deg, var(--accent-blue), #8b5cf6);
       -webkit-background-clip: text;
@@ -64,21 +71,29 @@
 
     .header-subtitle {
       color: var(--text-secondary);
-      font-size: 14px;
+      font-size: 13px;
+    }
+
+    .header-bottom-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
     }
 
     .header-stats {
       display: flex;
-      gap: 16px;
+      gap: 10px;
     }
 
     .stat-badge {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
+      padding: 5px 11px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
     }
 
@@ -86,6 +101,9 @@
     .stat-badge.andamento { background: var(--accent-yellow-bg); color: var(--accent-yellow); }
     .stat-badge.aguardando { background: var(--accent-blue-bg); color: var(--accent-blue); }
     .stat-badge.resolvido { background: var(--accent-green-bg); color: var(--accent-green); }
+    .stat-badge.disparos-info { background: rgba(139,92,246,0.12); color: #a78bfa; }
+    .stat-badge.disparos-ok { background: var(--accent-green-bg); color: var(--accent-green); }
+    .stat-badge.disparos-active { background: var(--accent-yellow-bg); color: var(--accent-yellow); }
 
     .stat-dot {
       width: 8px;
@@ -699,18 +717,10 @@
         padding: 12px;
         gap: 12px;
       }
-      .header {
-        flex-direction: column;
-        gap: 12px;
-      }
-      .header-logo {
-        font-size: 18px;
-      }
-      .header-stats {
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-      }
+      .header { gap: 6px; padding: 10px 12px 8px; }
+      .header-logo { font-size: 20px; }
+      .header-bottom-row { flex-wrap: wrap; gap: 8px; }
+      .header-stats { flex-wrap: wrap; gap: 6px; justify-content: center; }
       .column {
         min-height: auto;
       }
@@ -1008,20 +1018,23 @@
 
   <!-- HEADER -->
   <header class="header">
-    <div class="header-left">
-      <div>
+    <div class="header-top-row">
+      <div style="width:100px;"></div>
+      <div class="header-center">
         <div class="header-logo">Royal Print</div>
         <div class="header-subtitle">Painel de Atendimentos</div>
       </div>
+      <div class="connection-status" style="width:100px;justify-content:flex-end;">
+        <div class="connection-dot" id="connectionDot"></div>
+        <span id="connectionText">Conectando...</span>
+      </div>
     </div>
-    <div class="header-tabs">
-      <button class="tab-btn active" data-tab="atendimentos" onclick="switchTab('atendimentos')">Atendimentos</button>
-      <button class="tab-btn" data-tab="disparos" onclick="switchTab('disparos')">Disparos</button>
-    </div>
-    <div class="header-stats" id="stats"></div>
-    <div class="connection-status">
-      <div class="connection-dot" id="connectionDot"></div>
-      <span id="connectionText">Conectando...</span>
+    <div class="header-bottom-row">
+      <div class="header-tabs">
+        <button class="tab-btn active" data-tab="atendimentos" onclick="switchTab('atendimentos')">Atendimentos</button>
+        <button class="tab-btn" data-tab="disparos" onclick="switchTab('disparos')">Disparos</button>
+      </div>
+      <div class="header-stats" id="stats"></div>
     </div>
   </header>
 
@@ -1379,7 +1392,14 @@
       '</div>';
     }
 
+    var lastCounts = null;
+
     function renderStats(counts) {
+      lastCounts = counts;
+
+      // Don't overwrite stats if we're on the Disparos tab
+      if (currentTab !== 'atendimentos') return;
+
       // Calcular tempo medio de resposta
       var temposResposta = allCards
         .filter(function(c) { return c.first_response_at; })
@@ -1391,7 +1411,7 @@
         mediaTag = '<div class="stat-badge andamento"><div class="stat-dot andamento"></div>⏱️ ' + formatTempoMinutos(media) + '</div>';
       }
 
-      const stats = document.getElementById('stats');
+      var stats = document.getElementById('stats');
       stats.innerHTML =
         '<div class="stat-badge novo"><div class="stat-dot novo"></div>' + counts.novo + ' novos</div>' +
         '<div class="stat-badge andamento"><div class="stat-dot andamento"></div>' + counts.em_andamento + ' em andamento</div>' +
@@ -1751,7 +1771,10 @@
     // ============================================
     // TABS — Atendimentos / Disparos
     // ============================================
+    var currentTab = 'atendimentos';
+
     function switchTab(tab) {
+      currentTab = tab;
       document.querySelectorAll('.tab-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.tab === tab);
       });
@@ -1759,17 +1782,36 @@
       var boardEl    = document.getElementById('board');
       var metricsEl  = document.getElementById('metricsSection');
       var disparosEl = document.getElementById('disparosSection');
+      var statsEl    = document.getElementById('stats');
 
       if (tab === 'atendimentos') {
         boardEl.style.display    = '';
         metricsEl.style.display  = '';
         disparosEl.style.display = 'none';
+        // Re-render atendimentos stats
+        if (typeof lastCounts !== 'undefined' && lastCounts) renderStats(lastCounts);
       } else if (tab === 'disparos') {
         boardEl.style.display    = 'none';
         metricsEl.style.display  = 'none';
         disparosEl.style.display = '';
         loadDisparos();
+        renderDisparosStats();
       }
+    }
+
+    function renderDisparosStats() {
+      var statsEl = document.getElementById('stats');
+      // Count from the disparos table if available
+      var rows = document.querySelectorAll('#disparosBody tr');
+      var total = rows.length;
+      var enviando = 0;
+      rows.forEach(function(row) {
+        var statusCell = row.querySelector('td:nth-child(4)');
+        if (statusCell && statusCell.textContent.trim().toLowerCase().indexOf('enviando') >= 0) enviando++;
+      });
+      statsEl.innerHTML =
+        '<div class="stat-badge disparos-info"><div class="stat-dot" style="background:#a78bfa;"></div>' + total + ' disparos</div>' +
+        '<div class="stat-badge disparos-active"><div class="stat-dot andamento"></div>' + enviando + ' em andamento</div>';
     }
 
     // ============================================
@@ -2060,6 +2102,7 @@
               '<td>' + cancelBtn + '</td>' +
             '</tr>';
           }).join('');
+          renderDisparosStats();
         })
         .catch(function(e) {
           console.error('loadDisparos error:', e);
