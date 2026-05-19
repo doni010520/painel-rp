@@ -925,6 +925,41 @@
       border: 1px solid var(--border);
     }
 
+    .teste-numeros-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .teste-numero-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(139,92,246,0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 20px;
+      padding: 5px 10px 5px 14px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .teste-numero-chip .remove-num {
+      cursor: pointer;
+      background: rgba(239,68,68,0.2);
+      color: var(--accent-red);
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+      padding: 0;
+      transition: background 0.2s;
+    }
+    .teste-numero-chip .remove-num:hover {
+      background: rgba(239,68,68,0.4);
+    }
+
     .agendar-fields {
       padding: 16px;
       background: var(--bg-card);
@@ -1151,9 +1186,15 @@
       <div class="d-form-group" style="margin-bottom:12px;">
         <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;">
           <input type="checkbox" id="modoTeste" onchange="toggleModoTeste()">
-          <span>🧪 Modo teste (enviar apenas para meu número)</span>
+          <span>Modo teste (enviar apenas para numeros selecionados)</span>
         </label>
-        <input type="text" id="testeNumero" placeholder="Ex: 71993061031" value="5571993061031" style="display:none;margin-top:6px;max-width:220px;">
+        <div id="testeNumerosContainer" style="display:none;margin-top:10px;">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <input type="text" id="testeNumeroInput" placeholder="Ex: 71993061031" style="flex:1;max-width:240px;" onkeydown="if(event.key==='Enter'){event.preventDefault();addTestNumber();}">
+            <button type="button" class="d-btn d-btn-secondary" onclick="addTestNumber()" style="padding:8px 14px;font-size:13px;">+ Adicionar</button>
+          </div>
+          <div id="testeNumerosList" class="teste-numeros-list"></div>
+        </div>
       </div>
 
       <div class="disparos-actions">
@@ -1951,19 +1992,57 @@
     }
 
     // ============================================
-    // DISPAROS — MODO TESTE
+    // DISPAROS — MODO TESTE (múltiplos números)
     // ============================================
+    var testeNumeros = [];
+
     function toggleModoTeste() {
       var checked = document.getElementById('modoTeste').checked;
-      document.getElementById('testeNumero').style.display = checked ? '' : 'none';
+      document.getElementById('testeNumerosContainer').style.display = checked ? '' : 'none';
+      if (checked) renderTestNumbers();
     }
 
-    function getTesteNumero() {
+    function formatTestNum(raw) {
+      var digits = String(raw).replace(/\D/g, '');
+      if (!digits || digits.length < 10) return null;
+      return digits.startsWith('55') ? digits : '55' + digits;
+    }
+
+    function addTestNumber() {
+      var input = document.getElementById('testeNumeroInput');
+      var num = formatTestNum(input.value);
+      if (!num) { alert('Informe um numero valido (DDD + numero).'); return; }
+      if (testeNumeros.indexOf(num) >= 0) { alert('Numero ja adicionado.'); input.value = ''; return; }
+      testeNumeros.push(num);
+      input.value = '';
+      renderTestNumbers();
+    }
+
+    function removeTestNumber(num) {
+      testeNumeros = testeNumeros.filter(function(n) { return n !== num; });
+      renderTestNumbers();
+    }
+
+    function renderTestNumbers() {
+      var list = document.getElementById('testeNumerosList');
+      if (testeNumeros.length === 0) {
+        list.innerHTML = '<span style="font-size:12px;color:var(--text-secondary);">Nenhum numero adicionado</span>';
+        return;
+      }
+      list.innerHTML = testeNumeros.map(function(num) {
+        var display = num.replace(/^55(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3');
+        return '<span class="teste-numero-chip">' +
+          display +
+          '<button class="remove-num" onclick="removeTestNumber(\'' + num + '\')" title="Remover">&times;</button>' +
+        '</span>';
+      }).join('');
+    }
+
+    function getTesteNumeros() {
       var checked = document.getElementById('modoTeste').checked;
       if (!checked) return null;
-      var num = document.getElementById('testeNumero').value.trim().replace(/\D/g, '');
-      if (!num || num.length < 10) { alert('Informe um numero valido para teste.'); return false; }
-      return num.startsWith('55') ? num : '55' + num;
+      if (testeNumeros.length === 0) { alert('Adicione pelo menos um numero para teste.'); return false; }
+      return testeNumeros;
     }
 
     // ============================================
@@ -1971,8 +2050,8 @@
     // ============================================
     function confirmarEEnviar(enviarAgora, agendadoPara) {
       var legenda = document.getElementById('legendaInput').value.trim();
-      var testeNum = getTesteNumero();
-      if (testeNum === false) return;
+      var testeNums = getTesteNumeros();
+      if (testeNums === false) return;
 
       fetch('/api/disparos', {
         method: 'POST',
@@ -1982,7 +2061,7 @@
         .then(function(r) { return r.json(); })
         .catch(function() { return { count: '?' }; })
         .then(function(data) {
-          var count = testeNum ? '1 (TESTE)' : (data.count || '?');
+          var count = testeNums ? testeNums.length + ' (TESTE)' : (data.count || '?');
           var acao = enviarAgora
             ? 'Enviar AGORA'
             : 'Agendar para ' + new Date(agendadoPara).toLocaleString('pt-BR');
@@ -1991,15 +2070,15 @@
             'Arquivo: ' + selectedFile.name + '\n' +
             'Legenda: ' + legenda.substring(0, 80) + (legenda.length > 80 ? '...' : '') + '\n' +
             'Destinatarios: ' + count + ' contatos\n' +
-            (testeNum ? 'Numero teste: ' + testeNum + '\n' : '') +
+            (testeNums ? 'Numeros teste: ' + testeNums.join(', ') + '\n' : '') +
             'Acao: ' + acao;
 
           if (!confirm(msg)) return;
-          executarDisparo(enviarAgora, agendadoPara, legenda, testeNum);
+          executarDisparo(enviarAgora, agendadoPara, legenda, testeNums);
         });
     }
 
-    function executarDisparo(enviarAgora, agendadoPara, legenda, testeNumero) {
+    function executarDisparo(enviarAgora, agendadoPara, legenda, testeNumeros) {
       var btnEnviar = document.getElementById('btnEnviarAgora');
       var btnAgendar = document.getElementById('btnAgendar');
       var progress = document.getElementById('uploadProgress');
@@ -2026,7 +2105,7 @@
             agendado_para: agendadoPara,
             enviar_agora:  enviarAgora,
             created_by:    'admin',
-            teste_numero:  testeNumero || null
+            teste_numeros: testeNumeros || null
           })
         });
       })
