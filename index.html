@@ -925,18 +925,98 @@
       border: 1px solid var(--border);
     }
 
+    /* Destinatários toggle */
+    .dest-toggle {
+      display: flex;
+      gap: 0;
+      background: var(--bg-primary);
+      border-radius: 10px;
+      padding: 3px;
+      margin-bottom: 12px;
+    }
+    .dest-option {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .dest-option.active {
+      background: var(--accent-blue);
+      color: #fff;
+    }
+    .dest-info {
+      padding: 10px 14px;
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Input de número */
+    .teste-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .teste-input-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .teste-input-prefix {
+      padding: 8px 0 8px 12px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      user-select: none;
+    }
+    .teste-input-wrapper input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 8px 12px 8px 4px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .teste-input-wrapper:focus-within {
+      border-color: var(--accent-blue);
+    }
+    .teste-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      margin-top: 4px;
+    }
+
+    /* Chips de números */
     .teste-numeros-list {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      margin-bottom: 4px;
     }
     .teste-numero-chip {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(139,92,246,0.15);
-      color: #a78bfa;
-      border: 1px solid rgba(139,92,246,0.3);
+      background: rgba(34,197,94,0.12);
+      color: var(--accent-green);
+      border: 1px solid rgba(34,197,94,0.25);
       border-radius: 20px;
       padding: 5px 10px 5px 14px;
       font-size: 13px;
@@ -1183,17 +1263,31 @@
         <textarea id="legendaInput" rows="4" placeholder="Digite a mensagem que acompanha o arquivo..."></textarea>
       </div>
 
-      <div class="d-form-group" style="margin-bottom:12px;">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;">
-          <input type="checkbox" id="modoTeste" onchange="toggleModoTeste()">
-          <span>Modo teste (enviar apenas para numeros selecionados)</span>
-        </label>
-        <div id="testeNumerosContainer" style="display:none;margin-top:10px;">
-          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-            <input type="text" id="testeNumeroInput" placeholder="Ex: 71993061031" style="flex:1;max-width:240px;" onkeydown="if(event.key==='Enter'){event.preventDefault();addTestNumber();}">
-            <button type="button" class="d-btn d-btn-secondary" onclick="addTestNumber()" style="padding:8px 14px;font-size:13px;">+ Adicionar</button>
+      <!-- DESTINATÁRIOS -->
+      <div class="d-form-group destinatarios-section" style="margin-bottom:16px;">
+        <div class="dest-toggle">
+          <button type="button" class="dest-option active" id="destTodos" onclick="setDestinatario('todos')">
+            👥 Todos os contatos
+          </button>
+          <button type="button" class="dest-option" id="destTeste" onclick="setDestinatario('teste')">
+            🎯 Números específicos
+          </button>
+        </div>
+
+        <div id="destTodosInfo" class="dest-info">
+          <span>📨 Será enviado para todos os contatos da base</span>
+        </div>
+
+        <div id="testeNumerosContainer" style="display:none;">
+          <div class="teste-input-row">
+            <div class="teste-input-wrapper">
+              <span class="teste-input-prefix">+55</span>
+              <input type="text" id="testeNumeroInput" placeholder="DDD + número (ex: 81987593444)" onkeydown="if(event.key==='Enter'){event.preventDefault();addTestNumber();}">
+            </div>
+            <button type="button" class="d-btn d-btn-primary" onclick="addTestNumber()" style="padding:8px 16px;font-size:13px;white-space:nowrap;">+ Adicionar</button>
           </div>
           <div id="testeNumerosList" class="teste-numeros-list"></div>
+          <div id="testeNumerosHint" class="teste-hint">Adicione os números que receberão o disparo</div>
         </div>
       </div>
 
@@ -1992,14 +2086,21 @@
     }
 
     // ============================================
-    // DISPAROS — MODO TESTE (múltiplos números)
+    // DISPAROS — DESTINATÁRIOS (todos vs específicos)
     // ============================================
     var testeNumeros = [];
+    var destinatarioMode = 'todos';
 
-    function toggleModoTeste() {
-      var checked = document.getElementById('modoTeste').checked;
-      document.getElementById('testeNumerosContainer').style.display = checked ? '' : 'none';
-      if (checked) renderTestNumbers();
+    function setDestinatario(mode) {
+      destinatarioMode = mode;
+      document.getElementById('destTodos').classList.toggle('active', mode === 'todos');
+      document.getElementById('destTeste').classList.toggle('active', mode === 'teste');
+      document.getElementById('destTodosInfo').style.display = mode === 'todos' ? '' : 'none';
+      document.getElementById('testeNumerosContainer').style.display = mode === 'teste' ? '' : 'none';
+      if (mode === 'teste') {
+        renderTestNumbers();
+        document.getElementById('testeNumeroInput').focus();
+      }
     }
 
     function formatTestNum(raw) {
@@ -2016,6 +2117,7 @@
       testeNumeros.push(num);
       input.value = '';
       renderTestNumbers();
+      input.focus();
     }
 
     function removeTestNumber(num) {
@@ -2025,10 +2127,13 @@
 
     function renderTestNumbers() {
       var list = document.getElementById('testeNumerosList');
+      var hint = document.getElementById('testeNumerosHint');
       if (testeNumeros.length === 0) {
-        list.innerHTML = '<span style="font-size:12px;color:var(--text-secondary);">Nenhum numero adicionado</span>';
+        list.innerHTML = '';
+        hint.style.display = '';
         return;
       }
+      hint.style.display = 'none';
       list.innerHTML = testeNumeros.map(function(num) {
         var display = num.replace(/^55(\d{2})(\d{4,5})(\d{4})$/, '($1) $2-$3');
         return '<span class="teste-numero-chip">' +
@@ -2039,9 +2144,8 @@
     }
 
     function getTesteNumeros() {
-      var checked = document.getElementById('modoTeste').checked;
-      if (!checked) return null;
-      if (testeNumeros.length === 0) { alert('Adicione pelo menos um numero para teste.'); return false; }
+      if (destinatarioMode !== 'teste') return null;
+      if (testeNumeros.length === 0) { alert('Adicione pelo menos um numero para envio.'); return false; }
       return testeNumeros;
     }
 
