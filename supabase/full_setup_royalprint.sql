@@ -1335,13 +1335,17 @@ begin
     insert into auth.users (
       instance_id, id, aud, role, email, encrypted_password,
       email_confirmed_at, created_at, updated_at,
-      raw_app_meta_data, raw_user_meta_data, is_super_admin
+      raw_app_meta_data, raw_user_meta_data, is_super_admin,
+      -- Token columns precisam ser '' (não NULL), senão o Supabase Auth quebra
+      -- com "Database error finding users" e o login falha.
+      confirmation_token, recovery_token, email_change, email_change_token_new
     ) values (
       '00000000-0000-0000-0000-000000000000', uid, 'authenticated', 'authenticated',
       mail, crypt(p_pwd, gen_salt('bf')),
       now(), now(), now(),
       '{"provider":"email","providers":["email"]}'::jsonb,
-      jsonb_build_object('name', p_name), false
+      jsonb_build_object('name', p_name), false,
+      '', '', '', ''
     );
     insert into auth.identities (
       id, user_id, provider_id, identity_data, provider,

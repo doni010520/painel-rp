@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui";
 
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [showPw, setShowPw] = useState(false);
   // Estado do desafio 2FA (quando a conta tem TOTP verificado).
   const [mfa, setMfa] = useState<{ factorId: string } | null>(null);
   const [code, setCode] = useState("");
@@ -50,7 +52,18 @@ export default function LoginPage() {
       email: toEmail(String(form.get("username"))),
       password: String(form.get("password")),
     });
-    if (error) { setPending(false); setError("Usuário ou senha inválidos."); return; }
+    if (error) {
+      setPending(false);
+      // Credenciais erradas → mensagem amigável; outros erros (config, rede,
+      // Auth quebrado) → mostra a causa real para facilitar o diagnóstico.
+      const msg = error.message || "";
+      setError(
+        /invalid login credentials/i.test(msg)
+          ? "Usuário ou senha inválidos."
+          : `Falha no login: ${msg}`,
+      );
+      return;
+    }
     await proceedOrChallenge();
   }
 
@@ -97,7 +110,26 @@ export default function LoginPage() {
     <AuthShell title="Entrar" subtitle="Acesse o seu painel de atendimento">
       <form onSubmit={onSubmit} className="space-y-4">
         <AuthField name="username" type="text" label="Usuário" placeholder="seu.usuario" />
-        <AuthField name="password" type="password" label="Senha" placeholder="••••••••" />
+        <div>
+          <label className="mb-1 block text-xs font-medium text-ink-soft">Senha</label>
+          <div className="relative">
+            <input
+              name="password"
+              type={showPw ? "text" : "password"}
+              required
+              placeholder="••••••••"
+              className="w-full rounded-lg border border-border px-3 py-2 pr-10 text-sm outline-none focus:border-brand"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPw((v) => !v)}
+              title={showPw ? "Ocultar senha" : "Mostrar senha"}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-soft hover:text-ink"
+            >
+              {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+        </div>
         {error && <p className="text-xs text-danger">{error}</p>}
         <Button type="submit" className="w-full" disabled={pending}>
           {pending ? "Entrando..." : "Entrar"}
