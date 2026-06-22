@@ -1,0 +1,13 @@
+{
+  "name": "Royal Print — Atendimento",
+  "short_name": "Royal Print",
+  "description": "Atendimento e automação de WhatsApp da Royal Print",
+  "start_url": "/atendimento",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1568dc",
+  "icons": [
+    { "src": "/icon-royalprint.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-royalprint.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
