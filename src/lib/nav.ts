@@ -17,6 +17,7 @@ import {
   Contact,
   type LucideIcon,
 } from "lucide-react";
+import { canAccessPath, type Role } from "./access";
 
 export interface NavItem {
   href: string;
@@ -69,3 +70,10 @@ export const NAV: NavGroup[] = [
 ];
 
 export const ALL_ITEMS: NavItem[] = NAV.flatMap((g) => g.items);
+
+/** Nav filtrada pelo papel do usuário (esconde grupos vazios). */
+export function navForRole(role?: Role | null): NavGroup[] {
+  return NAV.map((g) => ({ ...g, items: g.items.filter((i) => canAccessPath(role, i.href)) })).filter(
+    (g) => g.items.length > 0,
+  );
+}

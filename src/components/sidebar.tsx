@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { NAV } from "@/lib/nav";
+import { navForRole } from "@/lib/nav";
+import type { Role } from "@/lib/access";
 import { cn } from "@/lib/utils";
 
-export function Sidebar() {
+export function Sidebar({ role }: { role?: Role | null }) {
   const pathname = usePathname();
+  const NAV = navForRole(role);
   const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState(false);
   const expanded = pinned || hovered;

@@ -12,11 +12,13 @@ export function Topbar({
   orgName,
   email,
   userId,
+  role,
 }: {
   userName: string;
   orgName: string;
   email?: string;
   userId?: string | null;
+  role?: import("@/lib/access").Role | null;
 }) {
   const [open, setOpen] = useState(false);
   const initials = userName
@@ -29,7 +31,7 @@ export function Topbar({
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-surface px-4 md:px-6">
       <div className="flex items-center gap-2">
-        <MobileNav />
+        <MobileNav role={role} />
         <Link
           href="/atendimento"
           className="flex items-center gap-2 text-sm font-medium text-ink-soft transition hover:text-brand"
