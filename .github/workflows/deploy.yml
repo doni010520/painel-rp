@@ -27,16 +27,33 @@ jobs:
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
 
+      # Lê APP_VERSION de src/lib/version.ts (ex.: v1.0.0) — é a versão que aparece
+      # no topo do app e em /api/version. A imagem é taggeada com ela.
+      - name: Resolve version
+        id: ver
+        run: |
+          VERSION=$(grep -oP 'APP_VERSION\s*=\s*"\K[^"]+' src/lib/version.ts)
+          SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "Versão: ${VERSION} | build ${{ github.run_number }} | sha ${SHORT_SHA}"
+
       - name: Build & push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
+          # Sem :latest. Tags humanas e ÚNICAS para saber exatamente o que está no ar:
+          #  - vX.Y.Z         → a versão (igual à mostrada no app)
+          #  - build-<n>      → contador incremental, nunca sobrescreve
+          #  - <short-sha>    → commit exato
           tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:${{ steps.ver.outputs.version }}
+            ${{ env.IMAGE }}:build-${{ github.run_number }}
+            ${{ env.IMAGE }}:${{ steps.ver.outputs.short_sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=https://skacswwfbbdbtabgqsqy.supabase.co
             NEXT_PUBLIC_SUPABASE_ANON_KEY=set-at-runtime
+            GIT_SHA=${{ steps.ver.outputs.short_sha }}
