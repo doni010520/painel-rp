@@ -34,6 +34,7 @@ export const NAV: NavGroup[] = [
   {
     title: "Geral",
     items: [
+      { href: "/tickets", label: "Tickets", icon: Ticket },
       { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
       { href: "/relatorios", label: "Relatórios", icon: BarChart3 },
     ],
@@ -44,7 +45,6 @@ export const NAV: NavGroup[] = [
       { href: "/canais", label: "Canais", icon: Radio },
       { href: "/atendimento", label: "Atendimento", icon: MessageSquareText },
       { href: "/atendimento-v2", label: "Atendimento V2", icon: LayoutGrid },
-      { href: "/tickets", label: "Tickets", icon: Ticket },
       { href: "/mensagens", label: "Mensagens", icon: Tag },
       { href: "/automacoes", label: "Automações", icon: Bot },
       { href: "/disparos", label: "Disparos", icon: Megaphone },
