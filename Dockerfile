@@ -14,10 +14,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # ser self-contained no EasyPanel — sem precisar configurar build args. Para trocar de
 # projeto Supabase, sobrescreva via --build-arg ou edite os defaults abaixo.
 ARG NEXT_PUBLIC_SUPABASE_URL=https://skacswwfbbdbtabgqsqy.supabase.co
-# A ANON key NÃO precisa ser embutida no build: o layout injeta URL+anon em runtime
-# (force-dynamic) a partir das env vars do EasyPanel. Este placeholder só evita build
-# vazio; o valor real chega em runtime via NEXT_PUBLIC_SUPABASE_ANON_KEY.
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=set-at-runtime
+# ANON key embutida no build. É PÚBLICA por design (vive no navegador; o RLS é quem
+# protege os dados), então pode ir no git/imagem — assim o login funciona sem depender
+# de env de runtime no EasyPanel. Para trocar de projeto, sobrescreva via --build-arg.
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrYWNzd3dmYmJkYnRhYmdxc3F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODU5NjcsImV4cCI6MjA4OTI2MTk2N30.G4f7bqzj14MDro8RgKpqGxWIVhmZwjnI7hT_SNgZz2o
 ARG NEXT_PUBLIC_META_APP_ID
 ARG NEXT_PUBLIC_META_CONFIG_ID
 ARG NEXT_PUBLIC_META_GRAPH_VERSION

@@ -55,5 +55,5 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=https://skacswwfbbdbtabgqsqy.supabase.co
-            NEXT_PUBLIC_SUPABASE_ANON_KEY=set-at-runtime
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrYWNzd3dmYmJkYnRhYmdxc3F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2ODU5NjcsImV4cCI6MjA4OTI2MTk2N30.G4f7bqzj14MDro8RgKpqGxWIVhmZwjnI7hT_SNgZz2o
             GIT_SHA=${{ steps.ver.outputs.short_sha }}
