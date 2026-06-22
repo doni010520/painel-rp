@@ -6,6 +6,14 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui";
 
+// Login por USUÁRIO: o Supabase Auth usa e-mail por baixo, então completamos o
+// domínio interno. Quem digitar um e-mail completo (com "@") é respeitado.
+const LOGIN_DOMAIN = "@royalprint.com.br";
+function toEmail(login: string): string {
+  const v = login.trim();
+  return v.includes("@") ? v : `${v}${LOGIN_DOMAIN}`;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -39,10 +47,10 @@ export default function LoginPage() {
     const form = new FormData(e.currentTarget);
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({
-      email: String(form.get("email")),
+      email: toEmail(String(form.get("username"))),
       password: String(form.get("password")),
     });
-    if (error) { setPending(false); setError("E-mail ou senha inválidos."); return; }
+    if (error) { setPending(false); setError("Usuário ou senha inválidos."); return; }
     await proceedOrChallenge();
   }
 
@@ -88,7 +96,7 @@ export default function LoginPage() {
   return (
     <AuthShell title="Entrar" subtitle="Acesse o seu painel de atendimento">
       <form onSubmit={onSubmit} className="space-y-4">
-        <AuthField name="email" type="email" label="E-mail" placeholder="voce@empresa.com" />
+        <AuthField name="username" type="text" label="Usuário" placeholder="seu.usuario" />
         <AuthField name="password" type="password" label="Senha" placeholder="••••••••" />
         {error && <p className="text-xs text-danger">{error}</p>}
         <Button type="submit" className="w-full" disabled={pending}>
