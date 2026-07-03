@@ -31,7 +31,15 @@ export async function createChannel(formData: FormData) {
     credentials.access_token = String(formData.get("access_token") || "");
     const waba = String(formData.get("waba_id") || "").trim();
     if (waba) credentials.waba_id = waba;
+  } else if (type === "instagram") {
+    credentials.ig_id = String(formData.get("ig_id") || "").trim();
+    credentials.access_token = String(formData.get("access_token") || "").trim();
   }
+
+  const externalId =
+    type === "meta_cloud" ? (credentials.phone_number_id as string)
+    : type === "instagram" ? (credentials.ig_id as string)
+    : null;
 
   const supabase = await createClient();
   const { data: channel, error } = await supabase
@@ -42,7 +50,7 @@ export async function createChannel(formData: FormData) {
       type,
       phone,
       status: "pending",
-      external_id: type === "meta_cloud" ? (credentials.phone_number_id as string) : null,
+      external_id: externalId,
       credentials,
     })
     .select("*")

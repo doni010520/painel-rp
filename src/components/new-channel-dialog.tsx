@@ -7,7 +7,7 @@ import { Button } from "@/components/ui";
 import { createChannel } from "@/app/(app)/canais/actions";
 import { QrConnectModal } from "@/components/qr-connect-modal";
 
-type ChannelType = "uazapi" | "meta_cloud";
+type ChannelType = "uazapi" | "meta_cloud" | "instagram";
 
 export function NewChannelDialog() {
   const router = useRouter();
@@ -55,30 +55,53 @@ export function NewChannelDialog() {
             <form action={onSubmit} className="space-y-4">
               <div>
                 <label className="mb-1 block text-xs font-medium text-ink-soft">Tipo de conexão</label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <TypeOption
-                    label="WhatsApp (QR Code)"
+                    label="WhatsApp (QR)"
                     desc="Via UAZAPI"
                     active={type === "uazapi"}
                     onClick={() => setType("uazapi")}
                   />
                   <TypeOption
-                    label="API Oficial"
-                    desc="Meta Cloud API"
+                    label="WhatsApp API"
+                    desc="Meta Cloud"
                     active={type === "meta_cloud"}
                     onClick={() => setType("meta_cloud")}
+                  />
+                  <TypeOption
+                    label="Instagram"
+                    desc="DM (Meta)"
+                    active={type === "instagram"}
+                    onClick={() => setType("instagram")}
                   />
                 </div>
                 <input type="hidden" name="type" value={type} />
               </div>
 
               <Field name="name" label="Nome do canal" placeholder="Como vai identificar o canal?" required />
-              <Field
-                name="phone"
-                label="Número (com DDI)"
-                placeholder="55 73 9XXXX-XXXX"
-                required={type === "meta_cloud"}
-              />
+              {type !== "instagram" && (
+                <Field
+                  name="phone"
+                  label="Número (com DDI)"
+                  placeholder="55 73 9XXXX-XXXX"
+                  required={type === "meta_cloud"}
+                />
+              )}
+
+              {type === "instagram" && (
+                <>
+                  <Field name="ig_id" label="ID da conta Instagram" placeholder="Ex: 17841400000000000" required />
+                  <Field name="access_token" label="Token do Instagram" placeholder="IG User access token (IGQ...)" required />
+                  <p className="rounded-lg bg-pink-50 px-3 py-2 text-xs text-pink-700">
+                    No{" "}
+                    <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer" className="underline">
+                      Meta for Developers
+                    </a>{" "}
+                    → caso de uso <strong>&ldquo;Gerenciar mensagens no Instagram&rdquo;</strong> → gere o token e pegue o ID da conta.
+                    Configure o webhook em <code>/api/webhooks/meta</code> e assine o campo <code>messages</code>.
+                  </p>
+                </>
+              )}
 
               {type === "meta_cloud" && (
                 <>

@@ -1,5 +1,5 @@
 export type Role = "admin" | "supervisor" | "agent";
-export type ChannelType = "meta_cloud" | "uazapi";
+export type ChannelType = "meta_cloud" | "uazapi" | "instagram";
 export type ChannelStatus = "pending" | "connecting" | "connected" | "disconnected" | "error";
 export type ConversationStatus = "bot" | "queued" | "open" | "closed";
 export type MessageDirection = "in" | "out";

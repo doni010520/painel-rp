@@ -6,6 +6,7 @@ import {
   parseMetaEchoes,
   parseMetaStateSync,
 } from "@/lib/whatsapp/meta";
+import { parseInstagramWebhook } from "@/lib/whatsapp/instagram";
 import { persistInbound } from "@/lib/whatsapp/inbound";
 import { persistEchoes, persistContactSync } from "@/lib/whatsapp/coexistence";
 
@@ -50,6 +51,13 @@ export async function POST(request: Request) {
       return new NextResponse("invalid signature", { status: 401 });
     }
     const payload = JSON.parse(raw);
+
+    // Instagram DMs (object:"instagram") chegam no MESMO webhook, formato Messenger.
+    if (payload?.object === "instagram") {
+      const igMsgs = parseInstagramWebhook(payload);
+      if (igMsgs.length) await persistInbound(igMsgs);
+      return NextResponse.json({ ok: true });
+    }
 
     // Mensagens recebidas (inbound) + status.
     const inbound = parseMetaWebhook(payload);

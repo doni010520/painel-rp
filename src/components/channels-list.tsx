@@ -76,7 +76,7 @@ export function ChannelsList({ channels }: { channels: Channel[] }) {
           <p className="col-span-full py-6 text-center text-sm text-ink-soft">Nenhum canal encontrado.</p>
         )}
         {filtered.map((c) => {
-          const clickable = c.type !== "meta_cloud"; // UAZAPI: clicar reabre conexão (QR/código)
+          const clickable = c.type === "uazapi"; // só UAZAPI: clicar reabre conexão (QR/código)
           const menuBtn = (
             <button
               type="button"
